@@ -1,2 +1,2 @@
 # Real_World_Python
-Real World Python Book
+Code for exercises in <ins> Real World Python </ins>, by Lee Vaughan
