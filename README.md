@@ -1,4 +1,4 @@
-# Real_World_Python
+# Real World Python
 Code for exercises in <ins>Real World Python</ins>, by Lee Vaughan
 
 1. Saving Shipwrecked Sailors with Bayes' Rule
