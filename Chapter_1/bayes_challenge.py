@@ -36,6 +36,11 @@ class Search():
 
         self.sa3 = self.img[SA3_CORNERS[1] : SA3_CORNERS[3], 
                             SA3_CORNERS[0] : SA3_CORNERS[2]]
+        
+        # Create empty lists for search area that has been searched.
+        self.ssa1 = []
+        self.ssa2 = []
+        self.ssa3 = []
 
         # Set initial per-area target probabilities for finding sailor
         self.p1 = 0.2
@@ -46,6 +51,10 @@ class Search():
         self.sep1 = 0
         self.sep2 = 0
         self.sep3 = 0
+        
+        self.tsep1 = 0
+        self.tsep2 = 0
+        self.tsep3 = 0
 
     def draw_map(self, last_known):
         """Display basemap with scale, last known xy location, search areas."""
@@ -102,7 +111,7 @@ class Search():
             x = self.sailor_actual[0] + SA2_CORNERS[0]
             y = self.sailor_actual[1] + SA2_CORNERS[1]
             self.area_actual = 2
-        elif area == 3:
+        else:
             x = self.sailor_actual[0] + SA3_CORNERS[0]
             y = self.sailor_actual[1] + SA3_CORNERS[1]
             self.area_actual = 3
@@ -110,6 +119,7 @@ class Search():
 
     def calc_search_effectiveness(self):
         """Set decimal search effectiveness value per search area."""
+        """Calculate total search effectiveness value per search area. """
         self.sep1 = random.uniform(0.2, 0.9)
         self.sep2 = random.uniform(0.2, 0.9)
         self.sep3 = random.uniform(0.2, 0.9)
@@ -117,10 +127,28 @@ class Search():
     def conduct_search(self, area_num, area_array, effectiveness_prob):
         """Return search results and list of searched coordinates."""
         local_y_range = range(area_array.shape[0])
-        local_x_range = range(area_array.shape[1])
-        coords = list(itertools.product(local_x_range, local_y_range))
-        random.shuffle(coords)
-        coords = coords[:int((len(coords) * effectiveness_prob))]
+        local_x_range = range(area_array.shape[1])        
+        if area_num == 1:
+            coords = list(set(itertools.product(local_x_range, local_y_range))\
+                     - set(self.ssa1))
+            random.shuffle(coords)
+            coords = coords[:int((len(coords) * effectiveness_prob))]
+            self.ssa1 = self.ssa1 + coords
+            self.tsep1 = len(self.ssa1) / len(list(itertools.product(local_x_range, local_y_range)))
+        elif area_num == 2:
+            coords = list(set(itertools.product(local_x_range, local_y_range)) - \
+                    set(self.ssa2))
+            random.shuffle(coords)
+            coords = coords[:int((len(coords) * effectiveness_prob))]
+            self.ssa2 = self.ssa2 + coords
+            self.tsep2 = len(self.ssa2) / len(list(itertools.product(local_x_range, local_y_range)))
+        else:
+            coords = list(set(itertools.product(local_x_range, local_y_range)) - \
+                    set(self.ssa3))
+            random.shuffle(coords)
+            coords = coords[:int((len(coords) * effectiveness_prob))]
+            self.ssa3 = self.ssa3 + coords
+            self.tsep3 = len(self.ssa3) / len(list(itertools.product(local_x_range, local_y_range)))
         loc_actual = (self.sailor_actual[0], self.sailor_actual[1])
         if area_num == self.area_actual and loc_actual in coords:
             return 'Found in Area {}.'.format(area_num), coords
@@ -223,6 +251,9 @@ def main():
         print("Search {} Effectiveness (E):".format(search_num))
         print("E1 = {:.3f}, E2 = {:.3f}, E3 = {:.3f}"
               .format(app.sep1, app.sep2, app.sep3))
+        print("Search {} Total Effectiveness (E):".format(search_num))
+        print("E1 = {:.3f}, E2 = {:.3f}, E3 = {:.3f}"
+              .format(app.tsep1, app.tsep2, app.tsep3))
 
         # Print target probabilities if sailor is not found else show position.
         if results_1 == 'Not Found' and results_2 == 'Not Found':
