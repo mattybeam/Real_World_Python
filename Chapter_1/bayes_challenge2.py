@@ -186,18 +186,22 @@ def draw_menu(search_num):
 def main():
     app = Search('Cape_Python')
     sailor_x, sailor_y = app.sailor_final_location(num_search_areas=3)
-    print("-" * 65)
-    print("\nInitial Target (P) Probabilities:")
-    print("P1 = {:.3f}, P2 = {:.3f}, P3 = {:.3f}".format(app.p1, app.p2, app.p3))
     search_num = 1
     while search_num <= 3: # Limit to three days of searches
         app.calc_search_effectiveness()
-        if max(app.p1,app.p2,app.p3) == app.p1:
-            choice = "1" 
-        elif max(app.p1,app.p2,app.p3) == app.p2:
-            choice = "2"
+        # if max(app.p1,app.p2,app.p3) == app.p1:
+        #     choice = "1" 
+        # elif max(app.p1,app.p2,app.p3) == app.p2:
+        #     choice = "2"
+        # else:
+        #     choice = "3"
+        
+        if max(app.p1 + app.p2,app.p1 + app.p3,app.p2 + app.p3) == (app.p1 + app.p2):
+            choice = "4" 
+        elif max(app.p1 + app.p2,app.p1 + app.p3,app.p2 + app.p3) == (app.p1 + app.p3):
+            choice = "5"
         else:
-            choice = "3"
+            choice = "6"
         
         if choice == "0":
             sys.exit()
@@ -249,10 +253,8 @@ def main():
         app.revise_target_probs()  # Use Bayes' rule to update target probs.
 
 
-        # Print target probabilities if sailor is not found else show position.
-        if results_1 == 'Not Found' and results_2 == 'Not Found':
-            continue
-        else:
+        # If sailor is found, return search number and restart
+        if results_1 != 'Not Found' or results_2 != 'Not Found':
             return search_num
             main()
         search_num += 1
