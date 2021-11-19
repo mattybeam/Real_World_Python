@@ -39,7 +39,7 @@ def main():
 
 def text_to_string(filename):
     """Read a text file and return a string."""
-    with open(filename) as infile:
+    with open(filename, encoding='utf-8', errors='ignore') as infile:
         return infile.read()
 
 def make_punct_dict(strings_by_author):
